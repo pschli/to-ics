@@ -1,9 +1,12 @@
+import { v4 as uuidv4 } from "uuid";
+
 type attendeeData = {
   name: string;
   email: string;
 };
 
 export interface ICSInputData {
+  prodId: string;
   date: string;
   startTime: string;
   duration: string;
@@ -11,24 +14,31 @@ export interface ICSInputData {
   description?: string;
   endTime?: string;
   attendees?: attendeeData[];
+  categories?: string[];
 }
 
 export function generateICS(data: ICSInputData) {
-  if (!data.endTime) data.endTime = getEndTime(data.startTime, data.duration);
+  if (
+    !data.endTime ||
+    getTimeAsNumber(data.startTime) > getTimeAsNumber(data.endTime)
+  )
+    data.endTime = getEndTime(data.startTime, data.duration);
   let file =
     "BEGIN:VCALENDAR\n" +
     "CALSCALE:GREGORIAN\n" +
     "METHOD:PUBLISH\n" +
-    "PRODID:-//Cyla//EN\n" +
+    "PRODID:-//" +
+    data.prodId +
+    "//EN\n" +
     "VERSION:2.0\n" +
     "BEGIN:VEVENT\n" +
     "UID:" +
     getUID() +
     "\n" +
-    "DTSTART;VALUE=DATE-TIME:" +
+    "DTSTART:" +
     formatDate(data.date, data.startTime) +
     "\n" +
-    "DTEND;VALUE=DATE-TIME:" +
+    "DTEND:" +
     formatDate(data.date, data.endTime) +
     "\n" +
     "SUMMARY:" +
@@ -39,6 +49,7 @@ export function generateICS(data: ICSInputData) {
     let attendeeString: string = buildAppendeesEntries(data.attendees);
     file += attendeeString;
   }
+  if (data.categories) file += addCategories(data.categories);
   file += "END:VEVENT\n" + "END:VCALENDAR";
   return file;
 }
@@ -46,7 +57,7 @@ export function generateICS(data: ICSInputData) {
 export default generateICS;
 
 function formatDate(date: string, time: string) {
-  const formattedDate = convertDate(date) + convertTime(time);
+  const formattedDate = convertDate(date) + "T" + convertTime(time);
   return formattedDate;
 }
 
@@ -81,10 +92,23 @@ function getTimeAsNumber(timeValue: string): number {
 
 function buildAppendeesEntries(attendees: attendeeData[]) {
   let attendeeString: string = "";
+  attendees.forEach((attendee) => {
+    attendeeString += `ATTENDEE;CN="${attendee.name}":MAILTO:${attendee.email}\n`;
+  });
   return attendeeString;
 }
 
+function addCategories(categories: string[]): string {
+  let catString: string = `CATEGORIES:${categories[0]}`;
+  categories.forEach((cat, index) => {
+    if (index === 0) return;
+    catString += `,${cat}`;
+  });
+  catString += "\n";
+  return catString;
+}
+
 function getUID() {
-  const UID = "1234";
+  const UID = uuidv4();
   return UID;
 }
