@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "clean:dist": "rimraf ./dist",
     "clean:modules": "rimraf ./node_modules",

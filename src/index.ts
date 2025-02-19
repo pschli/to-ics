@@ -3,7 +3,7 @@ type attendeeData = {
   email: string;
 };
 
-interface icsInputData {
+export interface ICSInputData {
   date: string;
   startTime: string;
   duration: string;
@@ -13,7 +13,7 @@ interface icsInputData {
   attendees?: attendeeData[];
 }
 
-export function generateICS(data: icsInputData) {
+export function generateICS(data: ICSInputData) {
   if (!data.endTime) data.endTime = getEndTime(data.startTime, data.duration);
   let file =
     "BEGIN:VCALENDAR\n" +
@@ -40,9 +40,10 @@ export function generateICS(data: icsInputData) {
     file += attendeeString;
   }
   file += "END:VEVENT\n" + "END:VCALENDAR";
-  console.log(file);
   return file;
 }
+
+export default generateICS;
 
 function formatDate(date: string, time: string) {
   const formattedDate = convertDate(date) + convertTime(time);
@@ -53,7 +54,6 @@ function convertDate(date: string): string {
   let pieces = date.split("-");
   let [month, day, year] = pieces;
   month = month.length < 2 ? "0" + month : month;
-  console.log(month);
   day = day.length < 2 ? "0" + day : day;
   return year + month + day;
 }
