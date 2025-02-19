@@ -1,7 +1,7 @@
 import { generateICS, ICSInputData } from "./to-ics.js";
 
 let icsInput: ICSInputData = {
-  prodId: "CYLA",
+  prodId: "NAME",
   date: "3-10-2025",
   startTime: "12:00",
   duration: "0:30",
