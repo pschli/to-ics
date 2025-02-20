@@ -5,8 +5,8 @@ let icsInput: ICSInputData = {
   date: "3-10-2025",
   startTime: "12:00",
   duration: "0:30",
-  summary: "Termin mit Theo",
-  description: "Besprechung",
+  summary: "Appointment",
+  description: "Interview",
   attendees: [
     {
       name: "Theo Test",
